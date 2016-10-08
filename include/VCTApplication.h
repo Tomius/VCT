@@ -34,7 +34,7 @@ protected:
 	void drawVoxels();
 	void drawDepthTexture();
 	void voxelizeScene();
-	
+
 	int width_, height_;
 	Camera* camera_;
 	Controls* controls_;
@@ -46,7 +46,7 @@ protected:
 	GLuint standardShader_;
 
 	const float sponzaScale_ = 0.05f;
-	glm::vec3 lightDirection_ = glm::vec3(-0.3, 0.9, -0.25);
+	glm::vec3 lightDirection_ = glm::vec3(-0.2, 0.9, -0.15);
 
 	// Stuff for shadow mapping
 	GLuint depthFramebuffer_;
@@ -55,11 +55,11 @@ protected:
 	glm::mat4 depthViewProjectionMatrix_;
 
 	// Voxelization
-    GLuint voxelizationShader_;
-    Texture3D voxelTexture_;
-    const int voxelDimensions_ = 512;
-    const float voxelGridWorldSize_ = 150.0f;
-    glm::mat4 projX_, projY_, projZ_;
+  GLuint voxelizationShader_;
+  Texture3D voxelTexture_;
+  const int voxelDimensions_ = 256;
+  const float voxelGridWorldSize_ = 150.0f;
+  glm::mat4 projX_, projY_, projZ_;
 
 	// Render voxels
 	GLuint renderVoxelsShader_;

@@ -105,6 +105,8 @@ int main(void) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
+	glfwSwapInterval(0);
+
         // Update timer
         currentTime = glfwGetTime();
         float deltaTime = float(currentTime - previousTime);
