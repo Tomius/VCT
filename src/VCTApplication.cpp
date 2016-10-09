@@ -266,7 +266,7 @@ void VCTApplication::updateInput() {
         press5_ = false;
     }
     if (glfwGetKey(window_, GLFW_KEY_6) == GLFW_RELEASE) {
-        press5_ = false;
+        press6_ = false;
     }
 }
 

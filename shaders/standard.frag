@@ -95,10 +95,11 @@ vec4 coneTrace(vec3 direction, float tanHalfAngle, out float occlusion) {
     // front-to-back compositing
     color = /*alpha**/color + (1.0-alpha)*voxelColor.rgb;
     alpha += (1.0-alpha) * voxelColor.a;
-    occlusion += (1.0-alpha) * voxelColor.a / (1.0 + dist/MAX_DIST);
+    occlusion += 1.2 * (1.0-alpha) * voxelColor.a * (1.0 + 0.2*dist);
     dist += diameter * 0.5; // smoother than += diameter
   }
 
+  occlusion = clamp (occlusion, 0, 1);
   return vec4(color, 1.0);
 }
 
@@ -113,8 +114,6 @@ vec4 indirectLight(out float occlusion_out) {
         color += coneWeights[i] * coneTrace(tangentToWorld * coneDirections[i], 0.577, occlusion);
         occlusion_out += coneWeights[i] * occlusion;
     }
-
-    occlusion_out = 1 - occlusion_out;
 
     return color;
 }
@@ -178,7 +177,7 @@ void main() {
   vec3 N = calcBumpNormal();
   vec3 L = LightDirection;
   vec3 E = normalize(EyeDirection_world);
-  vec3 lightColor = vec3(5);
+  vec3 lightColor = vec3(2);
 
   // Calculate diffuse light
   vec3 diffuseReflection;
