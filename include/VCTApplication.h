@@ -46,7 +46,7 @@ protected:
 	GLuint standardShader_;
 
 	const float sponzaScale_ = 0.05f;
-	glm::vec3 lightDirection_ = glm::vec3(-0.2, 0.9, -0.15);
+	glm::vec3 lightDirection_ = glm::vec3(-0.3, 0.9, -0.26);
 
 	// Stuff for shadow mapping
 	GLuint depthFramebuffer_;
@@ -57,7 +57,7 @@ protected:
 	// Voxelization
   GLuint voxelizationShader_;
   Texture3D voxelTexture_;
-  const int voxelDimensions_ = 256;
+  const int voxelDimensions_ = 512;
   const float voxelGridWorldSize_ = 150.0f;
   glm::mat4 projX_, projY_, projZ_;
 
@@ -71,8 +71,8 @@ protected:
 	GLuint quadVBO_;
 
 	// Inputs
-	bool press1_ = false, press2_ = false, press3_ = false, press4_ = false;
-	bool showDiffuse_ = true, showIndirectDiffuse_ = true, showIndirectSpecular_ = true, showAmbientOcculision_ = true;
+	bool press1_ = false, press2_ = false, press3_ = false, press4_ = false, press5_ = false;
+	bool showDiffuse_ = true, showIndirectDiffuse_ = true, showIndirectSpecular_ = true, showAmbientOcculision_ = true, showCubes_ = false;
 };
 
 #endif // VCTAPPLICATION_H

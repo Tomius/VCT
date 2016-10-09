@@ -94,7 +94,7 @@ bool VCTApplication::loadObject(std::string path, std::string name, glm::vec3 po
 bool VCTApplication::initialize() {
 	std::cout << "Initializing VCT" << std::endl;
 
-  //glEnable (GL_BLEND); glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable (GL_BLEND); glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Init camera parameters
 	glm::vec3 pos = glm::vec3(0.0, 5.0, 5.0);
@@ -134,7 +134,7 @@ bool VCTApplication::initialize() {
 	glBindFramebuffer(GL_FRAMEBUFFER, depthFramebuffer_);
 
 	// Depth texture
-	depthTexture_.width = depthTexture_.height = 4096;
+	depthTexture_.width = depthTexture_.height = 8192;
 
 	glm::mat4 viewMatrix = glm::lookAt(lightDirection_, glm::vec3(0,0,0), glm::vec3(0,1,0));
 	glm::mat4 projectionMatrix = glm::ortho	<float>(-120, 120, -120, 120, -500, 500);
@@ -241,6 +241,10 @@ void VCTApplication::updateInput() {
         showAmbientOcculision_ = !showAmbientOcculision_;
         press4_ = true;
     }
+    if (!press5_ && glfwGetKey(window_, GLFW_KEY_5) == GLFW_PRESS) {
+        showCubes_ = !showCubes_;
+        press5_ = true;
+    }
 
     if (glfwGetKey(window_, GLFW_KEY_1) == GLFW_RELEASE) {
         press1_ = false;
@@ -253,6 +257,9 @@ void VCTApplication::updateInput() {
     }
     if (glfwGetKey(window_, GLFW_KEY_4) == GLFW_RELEASE) {
         press4_ = false;
+    }
+    if (glfwGetKey(window_, GLFW_KEY_5) == GLFW_RELEASE) {
+        press5_ = false;
     }
 }
 
@@ -310,7 +317,9 @@ void VCTApplication::draw() {
 	}
 
 	// Draw voxels for debugging (can't draw large voxel sets like 512^3)
-	//drawVoxels();
+  if (showCubes_ && voxelDimensions_ <= 128) {
+	  drawVoxels();
+  }
 
 	//drawTextureQuad(depthTexture_.textureID);
 }

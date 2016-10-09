@@ -78,7 +78,7 @@ int main(void) {
         fprintf(stderr, "Failed to initialize GLEW\n");
         return EXIT_FAILURE;
     }
-    
+
     dumpGLInfo();
     dumpGLErrors(); // Invalid enum here. Why?
 
@@ -99,7 +99,7 @@ int main(void) {
         fprintf(stderr, "Failed to initialize TestApplication\n");
         return EXIT_FAILURE;
     }
- 
+
     // Rendering Loop
     while (glfwWindowShouldClose(window) == false) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -119,7 +119,7 @@ int main(void) {
 		else {
 			timer += deltaTime;
 		}
-        
+
         app.update(deltaTime);
         app.draw();
 

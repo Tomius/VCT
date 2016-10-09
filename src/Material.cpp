@@ -9,7 +9,7 @@
 Material::Material() {
 	Texture2D tex;
 	tex.width = tex.height = tex.textureID = 0;
-	
+
 	diffuseTexture_ = tex;
 	specularTexture_ = tex;
 	maskTexture_ = tex;
@@ -18,7 +18,7 @@ Material::Material() {
 }
 
 Material::~Material() {
-	
+
 }
 
 void Material::loadAssimpMaterial(const aiMaterial* mat, std::string path) {
@@ -104,18 +104,18 @@ Texture2D Material::loadTexture(std::string filenameString) {
     if(tex.componentsPerPixel == 4) {
 	    glTexImage2D(GL_TEXTURE_2D,    // Type of texture
 	                 0,                // Mipmap level (0 being the top level i.e. full size)
-	                 GL_RGBA,          // Internal format
+	                 GL_SRGB_ALPHA_EXT,// Internal format
 	                 tex.width,       // Width of the texture
 	                 tex.height,      // Height of the texture,
 	                 0,                // Border in pixels
 	                 GL_RGBA,          // Data format
-	                 GL_UNSIGNED_BYTE, // Type of texture data
+	                 GL_UNSIGNED_BYTE, // Type of texture dataz
 	                 textureData);     // The image data to use for this texture
-	} 
+	}
 	else if(tex.componentsPerPixel == 3) {
 		glTexImage2D(GL_TEXTURE_2D,    // Type of texture
 	                 0,                // Mipmap level (0 being the top level i.e. full size)
-	                 GL_RGB,          // Internal format
+	                 GL_SRGB_EXT,          // Internal format
 	                 tex.width,       // Width of the texture
 	                 tex.height,      // Height of the texture,
 	                 0,                // Border in pixels
@@ -140,7 +140,7 @@ Texture2D Material::loadTexture(std::string filenameString) {
 	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); 
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
@@ -177,7 +177,7 @@ void Material::bindMaterial(GLuint shader) {
 	// glUniform3f(glGetUniformLocation(shader, "AmbientColor"), ambientColor_.r, ambientColor_.g, ambientColor_.b);
 	// glUniform3f(glGetUniformLocation(shader, "DiffuseColor"), diffuseColor_.r, diffuseColor_.g, diffuseColor_.b);
 	// glUniform3f(glGetUniformLocation(shader, "SpecularColor"), specularColor_.r, specularColor_.g, specularColor_.b);
-	
+
 	glUniform1f(glGetUniformLocation(shader, "Shininess"), shininess_);
 	glUniform1f(glGetUniformLocation(shader, "Opacity"), opacity_);
 

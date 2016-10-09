@@ -9,47 +9,78 @@ in fData {
     vec4 position_depth; // Position from the shadow map point of view
 } frag;
 
-uniform layout(RGBA8) image3D VoxelTexture;
-// uniform layout(r32ui) uimage3D VoxelTexture;
+// uniform layout(RGBA8) image3D VoxelTexture;
+uniform layout(r32ui) uimage3D VoxelTexture;
 uniform sampler2D DiffuseTexture;
 uniform sampler2DShadow ShadowMap;
 uniform int VoxelDimensions;
 
-void imageAtomicAverageRGBA8(layout(r32ui) coherent volatile uimage3D voxels, ivec3 coord, vec3 nextVec3)
-{
-  uint nextUint = packUnorm4x8(vec4(nextVec3,1.0/255.0));
-  uint prevUint = 0;
-  uint currUint;
+// Auxiliary functions borrowed from OpenGL Insights, 2011
 
-  vec4 currVec4;
+uint convVec4ToRGBA8(vec4 val) {
+  return (uint(val.w) & 0x000000FF) << 24U
+    | (uint(val.z) & 0x000000FF) << 16U
+    | (uint(val.y) & 0x000000FF) << 8U
+    | (uint(val.x) & 0x000000FF);
+}
 
-  vec3 average;
-  uint count;
+vec4 convRGBA8ToVec4(uint val) {
+  return vec4(float((val & 0x000000FF)),
+              float((val & 0x0000FF00) >> 8U),
+              float((val & 0x00FF0000) >> 16U),
+              float((val & 0xFF000000) >> 24U));
+}
 
-  //"Spin" while threads are trying to change the voxel
-  while((currUint = imageAtomicCompSwap(voxels, coord, prevUint, nextUint)) != prevUint)
-  {
-    prevUint = currUint;                    //store packed rgb average and count
-    currVec4 = unpackUnorm4x8(currUint);    //unpack stored rgb average and count
+uint encUnsignedNibble(uint m, uint n) {
+  return (m & 0xFEFEFEFE)
+    | (n & 0x00000001)
+    | (n & 0x00000002) << 7U
+    | (n & 0x00000004) << 14U
+    | (n & 0x00000008) << 21U;
+}
 
-    average = currVec4.rgb;             //extract rgb average
-    count   = uint(currVec4.a*255.0);  //extract count
+uint decUnsignedNibble(uint m) {
+  return (m & 0x00000001)
+    | (m & 0x00000100) >> 7U
+    | (m & 0x00010000) >> 14U
+    | (m & 0x01000000) >> 21U;
+}
 
-    //Compute the running average
-    average = (average*count + nextVec3) / (count+1);
+void imageAtomicRGBA8Avg(layout(r32ui) uimage3D img,
+                         ivec3 coords, vec4 val) {
 
-    //Pack new average and incremented count back into a uint
-    nextUint = packUnorm4x8(vec4(average, (count+1)/255.0f));
+  // LSBs are used for the sample counter of the moving average.
+
+  val *= 255.0;
+  uint newVal = encUnsignedNibble(convVec4ToRGBA8(val), 1);
+  uint prevStoredVal = 0;
+  uint currStoredVal;
+
+  int counter = 0;
+  // Loop as long as destination value gets changed by other threads
+  while ((currStoredVal = imageAtomicCompSwap(img, coords, prevStoredVal, newVal))
+         != prevStoredVal && counter < 16) {
+
+    vec4 rval = convRGBA8ToVec4(currStoredVal & 0xFEFEFEFE);
+    uint n = decUnsignedNibble(currStoredVal);
+    rval = rval * n + val;
+    rval /= ++n;
+    rval = round(rval / 2) * 2;
+    newVal = encUnsignedNibble(convVec4ToRGBA8(rval), n);
+
+    prevStoredVal = currStoredVal;
+
+    counter++;
   }
 }
 
 void main() {
   vec4 materialColor = texture(DiffuseTexture, frag.UV);
-  vec3 lightColor = vec3(2.5, 2.5, 2.0);
 
   // Do shadow map lookup here
   // TODO: Splat photons onto the voxels at a later stage using a separate shader
   float visibility = texture(ShadowMap, vec3(frag.position_depth.xy, (frag.position_depth.z - 0.001)/frag.position_depth.w));
+  visibility = max(visibility, 0.08);
 
 	ivec3 camPos = ivec3(gl_FragCoord.x, gl_FragCoord.y, VoxelDimensions * gl_FragCoord.z);
 	ivec3 texPos;
@@ -69,11 +100,6 @@ void main() {
 	// Flip it!
 	texPos.z = VoxelDimensions - texPos.z - 1;
 
-	// Overwrite currently stored value.
-	// TODO: Atomic operations to get an averaged value, described in OpenGL insights about voxelization
-	// Required to avoid flickering when voxelizing every frame
-    imageStore(VoxelTexture, texPos, vec4(materialColor.rgb * visibility, 1.0));
-  // imageAtomicAverageRGBA8(VoxelTexture, texPos, materialColor.rgb * lightColor * visibility);
-  // vec4 savedColor = texture(VoxelTexture, texPos);
-  // imageStore(VoxelTexture, texPos, packUnorm4x8(vec4(savedColor, 1.0)));
+  // imageStore(VoxelTexture, texPos, vec4(materialColor.rgb * visibility, 1.0));
+  imageAtomicRGBA8Avg(VoxelTexture, texPos, vec4(materialColor.rgb * visibility, 1.0));
 }
