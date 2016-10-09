@@ -3,17 +3,18 @@
 
 // Data from geometry shader
 in fData {
-    vec2 UV;
-    mat4 projectionMatrix;
-    flat int axis;
-    vec4 position_depth; // Position from the shadow map point of view
+  vec2 UV;
+  vec4 position_depth; // Position from the shadow map point of view
+  vec3 normal;
+  flat int axis;
 } frag;
 
-// uniform layout(RGBA8) image3D VoxelTexture;
-uniform layout(r32ui) uimage3D VoxelTexture;
+uniform layout(RGBA8) image3D VoxelTexture;
+//uniform layout(r32ui) uimage3D VoxelTexture;
 uniform sampler2D DiffuseTexture;
 uniform sampler2DShadow ShadowMap;
 uniform int VoxelDimensions;
+uniform vec3 LightDirection;
 
 // Auxiliary functions borrowed from OpenGL Insights, 2011
 
@@ -76,11 +77,13 @@ void imageAtomicRGBA8Avg(layout(r32ui) uimage3D img,
 
 void main() {
   vec4 materialColor = texture(DiffuseTexture, frag.UV);
+  float cosTheta = max(0.0, dot(normalize(frag.normal), LightDirection));
+  // float cosTheta = length(LightDirection);
 
   // Do shadow map lookup here
   // TODO: Splat photons onto the voxels at a later stage using a separate shader
   float visibility = texture(ShadowMap, vec3(frag.position_depth.xy, (frag.position_depth.z - 0.001)/frag.position_depth.w));
-  visibility = max(visibility, 0.08);
+  visibility = max(visibility, 0.12);
 
 	ivec3 camPos = ivec3(gl_FragCoord.x, gl_FragCoord.y, VoxelDimensions * gl_FragCoord.z);
 	ivec3 texPos;
@@ -100,6 +103,7 @@ void main() {
 	// Flip it!
 	texPos.z = VoxelDimensions - texPos.z - 1;
 
-  // imageStore(VoxelTexture, texPos, vec4(materialColor.rgb * visibility, 1.0));
-  imageAtomicRGBA8Avg(VoxelTexture, texPos, vec4(materialColor.rgb * visibility, 1.0));
+  vec4 colorToStore = vec4(cosTheta * visibility * materialColor.rgb, 1.0);
+  imageStore(VoxelTexture, texPos, colorToStore);
+  //imageAtomicRGBA8Avg(VoxelTexture, texPos, colorToStore);
 }

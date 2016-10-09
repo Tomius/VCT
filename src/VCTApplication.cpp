@@ -359,6 +359,7 @@ void VCTApplication::voxelizeScene() {
     glUniformMatrix4fv(glGetUniformLocation(voxelizationShader_, "ProjX"), 1, GL_FALSE, &projX_[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(voxelizationShader_, "ProjY"), 1, GL_FALSE, &projY_[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(voxelizationShader_, "ProjZ"), 1, GL_FALSE, &projZ_[0][0]);
+    glUniform3f(glGetUniformLocation(voxelizationShader_, "LightDirection"), lightDirection_.x, lightDirection_.y, lightDirection_.z);
 
     // Bind depth texture
     glActiveTexture(GL_TEXTURE0 + 5);

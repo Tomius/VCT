@@ -177,14 +177,14 @@ void main() {
   vec3 N = calcBumpNormal();
   vec3 L = LightDirection;
   vec3 E = normalize(EyeDirection_world);
-  vec3 lightColor = vec3(4);
+  vec3 lightColor = vec3(5);
 
   // Calculate diffuse light
   vec3 diffuseReflection;
   {
     // Shadow map
     float visibility = texture(ShadowMap, vec3(Position_depth.xy, (Position_depth.z - 0.0005)/Position_depth.w));
-    visibility = max(visibility, 0.08);
+    visibility = max(visibility, 0.12);
 
     // Direct diffuse light
     float cosTheta = max(0, dot(N, L));
@@ -212,7 +212,7 @@ void main() {
     // For example so that the floor doesnt reflect itself when looking at it with a small angle
     float specularOcclusion;
     vec4 tracedSpecular = coneTrace(reflectDir, 0.07, specularOcclusion); // 0.2 = 22.6 degrees, 0.1 = 11.4 degrees, 0.07 = 8 degrees angle
-    specularReflection = ShowIndirectSpecular > 0.5 ? specularColor.rgb * tracedSpecular.rgb : vec3(0.0);
+    specularReflection = ShowIndirectSpecular > 0.5 ? specularColor.rgb * tracedSpecular.rgb * 0.75 : vec3(0.0);
   }
 
   vec3 linearHDRColor = lightColor * (diffuseReflection + specularReflection);

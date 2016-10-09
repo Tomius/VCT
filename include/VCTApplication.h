@@ -46,7 +46,7 @@ protected:
 	GLuint standardShader_;
 
 	const float sponzaScale_ = 0.05f;
-	glm::vec3 lightDirection_ = glm::vec3(-0.3, 0.9, -0.26);
+	glm::vec3 lightDirection_ = normalize(glm::vec3(-0.3, 0.9, -0.26));
 
 	// Stuff for shadow mapping
 	GLuint depthFramebuffer_;
@@ -57,7 +57,7 @@ protected:
 	// Voxelization
   GLuint voxelizationShader_;
   Texture3D voxelTexture_;
-  const int voxelDimensions_ = 512;
+  const int voxelDimensions_ = 128;
   const float voxelGridWorldSize_ = 150.0f;
   glm::mat4 projX_, projY_, projZ_;
 
