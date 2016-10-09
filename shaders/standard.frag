@@ -36,6 +36,7 @@ uniform float ShowDiffuse;
 uniform float ShowIndirectDiffuse;
 uniform float ShowIndirectSpecular;
 uniform float ShowAmbientOcculision;
+uniform float ShowAmbientOcculisionOnly;
 
 uniform vec3 LightDirection;
 
@@ -181,6 +182,7 @@ void main() {
 
   // Calculate diffuse light
   vec3 diffuseReflection;
+  float occlusion = 0.0;
   {
     // Shadow map
     float visibility = texture(ShadowMap, vec3(Position_depth.xy, (Position_depth.z - 0.0005)/Position_depth.w));
@@ -191,10 +193,9 @@ void main() {
     vec3 directDiffuseLight = ShowDiffuse > 0.5 ? vec3(visibility * cosTheta) : vec3(0.0);
 
     // Indirect diffuse light
-    float occlusion = 0.0;
     vec3 indirectDiffuseLight = indirectLight(occlusion).rgb;
     indirectDiffuseLight = ShowIndirectDiffuse > 0.5 ? indirectDiffuseLight : vec3(0.0);
-    occlusion = ShowAmbientOcculision > 0.5 ? occlusion : 1.0;
+    occlusion = ShowAmbientOcculisionOnly > 0.5 || ShowAmbientOcculision > 0.5 ? occlusion : 1.0;
 
     // Sum direct and indirect diffuse light and tweak a little bit
     diffuseReflection = occlusion*(directDiffuseLight + indirectDiffuseLight) * materialColor.rgb;
@@ -216,5 +217,6 @@ void main() {
   }
 
   vec3 linearHDRColor = lightColor * (diffuseReflection + specularReflection);
-  color = vec4(PostProcess (linearHDRColor), alpha);
+  vec3 finalColor = ShowAmbientOcculisionOnly > 0.5 ? vec3(occlusion) : PostProcess (linearHDRColor);
+  color = vec4(finalColor, alpha);
 }

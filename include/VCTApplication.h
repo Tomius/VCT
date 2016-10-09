@@ -71,8 +71,8 @@ protected:
 	GLuint quadVBO_;
 
 	// Inputs
-	bool press1_ = false, press2_ = false, press3_ = false, press4_ = false, press5_ = false;
-	bool showDiffuse_ = true, showIndirectDiffuse_ = true, showIndirectSpecular_ = true, showAmbientOcculision_ = true, showCubes_ = false;
+	bool press1_ = false, press2_ = false, press3_ = false, press4_ = false, press5_ = false, press6_ = false;
+	bool showDiffuse_ = true, showIndirectDiffuse_ = true, showIndirectSpecular_ = true, showAmbientOcculision_ = true, showAmbientOcculisionOnly_ = false, showCubes_ = false;
 };
 
 #endif // VCTAPPLICATION_H

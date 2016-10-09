@@ -242,8 +242,12 @@ void VCTApplication::updateInput() {
         press4_ = true;
     }
     if (!press5_ && glfwGetKey(window_, GLFW_KEY_5) == GLFW_PRESS) {
-        showCubes_ = !showCubes_;
+        showAmbientOcculisionOnly_ = !showAmbientOcculisionOnly_;
         press5_ = true;
+    }
+    if (!press6_ && glfwGetKey(window_, GLFW_KEY_6) == GLFW_PRESS) {
+        showCubes_ = !showCubes_;
+        press6_ = true;
     }
 
     if (glfwGetKey(window_, GLFW_KEY_1) == GLFW_RELEASE) {
@@ -259,6 +263,9 @@ void VCTApplication::updateInput() {
         press4_ = false;
     }
     if (glfwGetKey(window_, GLFW_KEY_5) == GLFW_RELEASE) {
+        press5_ = false;
+    }
+    if (glfwGetKey(window_, GLFW_KEY_6) == GLFW_RELEASE) {
         press5_ = false;
     }
 }
@@ -302,7 +309,8 @@ void VCTApplication::draw() {
 	glUniform1f(glGetUniformLocation(standardShader_, "ShowDiffuse"), showDiffuse_);
 	glUniform1f(glGetUniformLocation(standardShader_, "ShowIndirectDiffuse"), showIndirectDiffuse_);
 	glUniform1f(glGetUniformLocation(standardShader_, "ShowIndirectSpecular"), showIndirectSpecular_);
-	glUniform1f(glGetUniformLocation(standardShader_, "ShowAmbientOcculision"), showAmbientOcculision_);
+  glUniform1f(glGetUniformLocation(standardShader_, "ShowAmbientOcculision"), showAmbientOcculision_);
+	glUniform1f(glGetUniformLocation(standardShader_, "ShowAmbientOcculisionOnly"), showAmbientOcculisionOnly_);
 
 	glActiveTexture(GL_TEXTURE0 + 5);
 	glBindTexture(GL_TEXTURE_2D, depthTexture_.textureID);
