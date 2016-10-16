@@ -177,7 +177,7 @@ void main() {
   vec3 N = calcBumpNormal();
   vec3 L = LightDirection;
   vec3 E = normalize(EyeDirection_world);
-  vec3 lightColor = vec3(2);
+  vec3 lightColor = vec3(1.2);
 
   // Calculate diffuse light
   vec3 diffuseReflection;
