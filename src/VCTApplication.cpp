@@ -108,16 +108,16 @@ bool VCTApplication::initialize() {
 	// Speed, Mouse sensitivity
 	controls_ = new Controls(10.0f, 0.0015f);
 
-	standardShader_ = loadShaders("../shaders/standard.vert", "../shaders/standard.frag");
-    voxelizationShader_ = loadShaders("../shaders/voxelization.vert", "../shaders/voxelization.frag", "../shaders/voxelization.geom");
-    shadowShader_ = loadShaders("../shaders/shadow.vert", "../shaders/shadow.frag");
-    quadShader_ = loadShaders("../shaders/quad.vert", "../shaders/quad.frag");
-    renderVoxelsShader_ = loadShaders("../shaders/renderVoxels.vert", "../shaders/renderVoxels.frag", "../shaders/renderVoxels.geom");
+	standardShader_ = loadShaders("shaders/standard.vert", "shaders/standard.frag");
+    voxelizationShader_ = loadShaders("shaders/voxelization.vert", "shaders/voxelization.frag", "shaders/voxelization.geom");
+    shadowShader_ = loadShaders("shaders/shadow.vert", "shaders/shadow.frag");
+    quadShader_ = loadShaders("shaders/quad.vert", "shaders/quad.frag");
+    renderVoxelsShader_ = loadShaders("shaders/renderVoxels.vert", "shaders/renderVoxels.frag", "shaders/renderVoxels.geom");
 
     // Load objects
     std::cout << "Loading objects... " << std::endl;
-    loadObject("../data/models/crytek-sponza/", "sponza.obj", glm::vec3(0.0f), sponzaScale_);
-	//loadObject("../data/models/", "suzanne.obj");
+    loadObject("data/models/crytek-sponza/", "sponza.obj", glm::vec3(0.0f), sponzaScale_);
+	  loadObject("data/models/", "suzanne.obj");
     std::cout << "Loading done! " << objects_.size() << " objects loaded" << std::endl;
 
 	// Sort object so opaque objects are rendered first
