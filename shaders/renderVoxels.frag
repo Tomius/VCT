@@ -9,5 +9,6 @@ void main() {
 	if(fragColor.a < 0.001)
 		discard;
 
-	color = fragColor;
+  color = vec4(pow(fragColor.rgb, vec3(1.0/2.2)), 1);
+	// color = vec4(vec3(pow(fragColor.a, 1.0/2.2)), 1);
 }
